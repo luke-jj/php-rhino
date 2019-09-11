@@ -2,6 +2,6 @@
 
 require_once "/lib/application.php";
 
-function rhino() {
-  return new Application();
+function rhino($settings = null) {
+  return new Application($settings);
 }

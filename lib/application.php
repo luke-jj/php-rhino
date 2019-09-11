@@ -2,6 +2,6 @@
 
 class Application {
 
-  public function __construct() {
+  public function __construct($settings) {
   }
 }
