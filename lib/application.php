@@ -2,13 +2,19 @@
 
 require_once (dirname(__FILE__) . "/request.php");
 require_once (dirname(__FILE__) . "/response.php");
+require_once (dirname(__FILE__) . "/endresponse.php");
 require_once (dirname(__FILE__) . "/router/router.php");
+require_once (dirname(__FILE__) . "/middleware/middleware.php");
 require_once (dirname(__FILE__) . "/middleware/jsonparse.php");
 
 class Application extends Router {
 
   public function __construct($req, $res, $options = null) {
     parent::__construct($req, $res);
+
+    if (!$options['strict']) {
+      $this->req->url = preg_replace("/\/$/", "", $this->req->url);
+    }
   }
 
   /*
@@ -19,18 +25,19 @@ class Application extends Router {
    */
 
   public function start() {
-    $executeMiddleware($this);
+    $this->executeMiddleware();
   }
 
-  private function executeMiddleware(Router $router) {
+  private function executeMiddleware() {
 
     foreach ($this->queue as $middleware) {
 
+      // TODO: fix! currently not working
       if ($middleware instanceof Router) {
-          $this->executeMiddleware($middleware);
+        $this->executeMiddleware($middleware);
       }
 
-      $middleware($this->req, $this->res);
+      ($middleware) ($this->mountpath, $this->req, $this->res);
     }
   }
 
@@ -39,15 +46,6 @@ class Application extends Router {
    */
 
   public function router() {
-      return new Router($req, $res);
-  }
-
-  /**
-   * Remove - if present - trailing forward slash of this object's resource 
-   * location
-   */
-
-  private function removeTrailingForwardSlash() {
-    $this->req->url = preg_replace("/\/$/", "", $this->req->url);
+    return new Router($this->req, $this->res);
   }
 }

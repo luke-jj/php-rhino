@@ -11,8 +11,8 @@ function rhino($options = null) {
   $req->headers = getallheaders();
 
   $app = new Application($req, $res, $options);
-  $app->req->app = $app;
-  $app->res->app = $app;
+  // $app->req->app = $app;
+  // $app->res->app = $app;
 
   return $app;
 }

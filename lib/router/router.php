@@ -12,18 +12,44 @@ class Router {
       $this->res = $res;
   }
 
-  public function use($path, $middlewareFunction) {
+  public function use(...$args) {
+    $path = '';
 
-      $queue[] = $middleware;
+    if (is_string($args[0])) {
+      $path = array_shift($args);
+    }
+
+    foreach ($args as $arg) {
+      $middleware = function($mountpath, $req, $res) use ($arg) {
+
+        $arg($req, $res);
+      };
+
+      $this->queue[] = $middleware;
+    }
   }
 
-  public function any() {
+  public function get(...$args) {
+    $this->use(...$args);
   }
 
-  public function get() {
-  }
 
+    // public function get($resourceDirection, $handler) {
 
+        // if (!$this->validateHttpMethod('GET')) {
+            // return;
+        // }
+
+        // if (!$this->validateResourceDirection($resourceDirection)) {
+            // return;
+        // }
+
+        // $this->req->params = $this->extractRouteParameters($resourceDirection);
+
+        // $handler($this->req, $this->res);
+
+        // throw new RouterExit();
+    // }
 
 
 
@@ -36,7 +62,7 @@ class Router {
 
 
     /**
-     * Http request method must match '$methodName'. 
+     * Http request method must match '$methodName'.
      *
      * @param $methodName string - http method name.
      * @return bool
@@ -51,7 +77,7 @@ class Router {
     // }
 
     /**
-     * Http request resource location must match the '$resourceDirection` 
+     * Http request resource location must match the '$resourceDirection`
      * parameter.
      *
      * @param $resourceDirection string - resource direction
@@ -82,7 +108,7 @@ class Router {
      * Return true if this resource direction has user defined parameter(s)
      *
      * @param string The resource direction for a particular route.
-     * @return bool 
+     * @return bool
      */
 
     // private function hasRouteParameters($resourceDirection) {
@@ -94,7 +120,7 @@ class Router {
     // }
 
     /**
-     * Extract route parameters defined with a colon `:` in the resource 
+     * Extract route parameters defined with a colon `:` in the resource
      * direction given to a specific route.
      *
      * @param string The resource direction for a particular route.
@@ -110,8 +136,8 @@ class Router {
             // $resourceBaseLocation = array_shift($routeParameterNames);
 
             // $bareParameters = str_replace(
-                // $resourceBaseLocation . "/", 
-                // "", 
+                // $resourceBaseLocation . "/",
+                // "",
                 // $this->req->getResourceLocation());
 
             // $parameterValues = preg_split("/\//", $bareParameters);
@@ -127,7 +153,7 @@ class Router {
     /**
      * A routing function that handles HTTP GET requests.
      *
-     * @param $handler Function - must be of the form function($req, $res) { } 
+     * @param $handler Function - must be of the form function($req, $res) { }
      */
 
     // public function get($resourceDirection, $handler) {
