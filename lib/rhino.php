@@ -2,6 +2,17 @@
 
 require_once (dirname(__FILE__) . "/application.php");
 
-function rhino($settings = null) {
-  return new Application($settings);
+function rhino($options = null) {
+
+  $req = new Request();
+  $res = new Response();
+
+  $req->method = $_SERVER['REQUEST_METHOD'];
+  $req->headers = getallheaders();
+
+  $app = new Application($req, $res, $options);
+  $app->req->app = $app;
+  $app->res->app = $app;
+
+  return $app;
 }
