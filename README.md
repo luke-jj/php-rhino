@@ -21,3 +21,4 @@
 
 ## TODO Items
 - [ ] figure out how to route all incoming http requests to a single php file.
+- [ ] Implement var-arg parameters to http methods.

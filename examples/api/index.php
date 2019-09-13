@@ -1,11 +1,11 @@
 <?php
 
-require_once "../../lib/rhino.php";
+require_once (dirname(__FILE__) . "/../../lib/rhino.php");
 
 $app = rhino();
 
-$app->get('/', function($req, $res) {
-    $res->send("Hello");
-});
+// $app->get('/', function($req, $res) {
+    // $res->send("Hello");
+// });
 
 $app->listen();
