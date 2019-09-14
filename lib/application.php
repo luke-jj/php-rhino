@@ -25,20 +25,7 @@ class Application extends Router {
    */
 
   public function start() {
-    $this->executeMiddleware();
-  }
-
-  private function executeMiddleware() {
-
-    foreach ($this->queue as $middleware) {
-
-      // if $middleware is router call this function recursively.
-      if (!is_callable($middleware)) {
-        $this->executeMiddleware($middleware);
-      }
-
-      ($middleware) ($this->mountpath, $this->req, $this->res);
-    }
+    $this->executeMiddleware($this);
   }
 
   /**

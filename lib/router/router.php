@@ -33,6 +33,29 @@ class Router {
     $this->use(...$args);
   }
 
+  /**
+   * This function is used by the Application to run the http request
+   * against all registered routes. Registered routes are stored in the
+   * $queue collection.
+   *
+   * @param $router Router
+   */
+
+  protected function executeMiddleware(Router $router) {
+
+    foreach ($router->queue as $middleware) {
+
+      // if $middleware is router call this function recursively.
+      if (!is_callable($middleware)) {
+        $router->executeMiddleware($middleware);
+      }
+
+      // else execute this $middleware closure
+      ($middleware) ($router->mountpath, $router->req, $router->res);
+    }
+  }
+
+
 
     // public function get($resourceDirection, $handler) {
 
