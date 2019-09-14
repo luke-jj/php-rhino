@@ -89,24 +89,4 @@ $app->delete('/api/courses/:id', function ($req, $res) {
   $res->json($course);
 });
 
-$app->use(function ($req, $res) {
-  $res->send("Hello from use!<br>\n");
-});
-
-$app->get('/', function ($req, $res) {
-  // can not use variables outside of this closure unless they are global
-  global $courses;
-  print_r($courses);
-
-  $res->send("Hello from get!<br>\n");
-
-  foreach ($req as $key => $value) {
-    print_r($key);
-    print_r(" => ");
-    print_r($value);
-    print_r("<br>\n");
-  }
-
-});
-
 $app->start();

@@ -32,8 +32,8 @@ class Application extends Router {
 
     foreach ($this->queue as $middleware) {
 
-      // TODO: fix! currently not working
-      if ($middleware instanceof Router) {
+      // if $middleware is router call this function recursively.
+      if (!is_callable($middleware)) {
         $this->executeMiddleware($middleware);
       }
 
