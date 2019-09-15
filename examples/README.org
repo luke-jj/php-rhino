@@ -1,0 +1,4 @@
+* Demo Section
+To run these demos, download the entire .git repository, cd into a demo folder
+or open a terminal in a demo folder, then run a local php development server
+=php -S localhost:8080=.
