@@ -12,9 +12,7 @@ class Application extends Router {
   public function __construct($req, $res, $options = null) {
     parent::__construct($req, $res);
 
-    if (!$options['strict']) {
-      $this->req->url = $this->removeTrailingSlash($this->req->url);
-    }
+    $this->req->url = $this->removeTrailingSlash($this->req->url);
   }
 
   /*

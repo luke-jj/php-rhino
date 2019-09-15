@@ -35,7 +35,7 @@ class Router {
       $middleware->method = 'ALL';
       $middleware->route = $route;
       $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($route, $req->url);
+        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
         // execute callback function
         $arg($req, $res);
@@ -59,7 +59,7 @@ class Router {
       $middleware->method = 'POST';
       $middleware->route = $route;
       $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($route, $req->url);
+        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
         // execute callback function
         $arg($req, $res);
@@ -85,7 +85,7 @@ class Router {
       $middleware->method = 'GET';
       $middleware->route = $route;
       $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($route, $req->url);
+        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
         // execute callback function
         $arg($req, $res);
@@ -111,7 +111,7 @@ class Router {
       $middleware->method = 'PUT';
       $middleware->route = $route;
       $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($route, $req->url);
+        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
         // execute callback function
         $arg($req, $res);
@@ -137,7 +137,7 @@ class Router {
       $middleware->method = 'DELETE';
       $middleware->route = $route;
       $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($route, $req->url);
+        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
         // execute callback function
         $arg($req, $res);
@@ -242,7 +242,9 @@ class Router {
 
   public static function extractRouteParameters($route, $url) {
 
+
     if (preg_match("/:/", $route)) {
+
       $params = array();
 
       $routeParameterNames = preg_split("/\/:/", $route);
