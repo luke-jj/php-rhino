@@ -15,19 +15,22 @@ class Application extends Router {
     $this->req->url = $this->removeTrailingSlash($this->req->url);
   }
 
-  /*
+  /**
    * Start this application.
    *
-   * Iterate over the middleware function collection,
-   * and execute middleware functions in an efficient manner.
+   * Iterate over all registered route queue collections, match routes and
+   * execute middleware and response callback functions.
    */
 
   public function start() {
     try {
       $this->executeRouter($this);
     } catch (EndResponse $e) {
-      // http response has been ended with a `$res.send();` statement
+      // http response has been ended with a `$res.end();` statement
+      return;
     }
+
+    $this->res->sendStatus(404);
   }
 
   /**
