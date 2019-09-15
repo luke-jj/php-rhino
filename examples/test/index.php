@@ -10,10 +10,11 @@ $app = rhino();
   // $res->send("This is the third callback.");
 // });
 
+require_once (dirname(__FILE__) . "/auth.php");
 require_once (dirname(__FILE__) . "/routes/documents.php");
 $app->use('/documents', $documentRouter);
 
-$app->get('/hi', function($req, $res) {
+$app->get('/hi', $auth, $auth, function($req, $res) {
   $res->send("hi there from base.");
 });
 
@@ -25,7 +26,7 @@ $app->get('/', function($req, $res) {
   $res->send("hi there from root.");
 });
 
-$app->get('/:number', function($req, $res) {
+$app->get('/:number', $auth, function($req, $res) {
   $res->send("You entered " . $req->params['number']);
 });
 

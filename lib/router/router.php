@@ -22,15 +22,16 @@ class Router {
       $route = '/*';
     }
 
-    if ($args[0] instanceof Router) {
-      ($args[0])->mountpath = $route;
-      ($args[0])->route = $route . "*";
-      $this->queue[] = $args[0];
-
-      return;
-    }
-
     foreach ($args as $arg) {
+
+      if ($arg instanceof Router) {
+        $arg->mountpath = $route;
+        $arg->route = $route . "*";
+        $this->queue[] = $args[0];
+
+        return;
+      }
+
       $middleware = new Middleware();
       $middleware->method = 'ALL';
       $middleware->route = $route;
@@ -80,21 +81,25 @@ class Router {
       $route = '/*';
     }
 
-    foreach ($args as $arg) {
-      $middleware = new Middleware();
-      $middleware->method = 'GET';
-      $middleware->route = $route;
-      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
+    $getHandler = array_pop($args);
 
-        // execute callback function
-        $arg($req, $res);
-
-        $res->end();
-      };
-
-      $this->queue[] = $middleware;
+    foreach($args as $arg) {
+      $this->use($route, $arg);
     }
+
+    $middleware = new Middleware();
+    $middleware->method = 'GET';
+    $middleware->route = $route;
+    $middleware->closure = function($mountpath, $req, $res) use ($getHandler, $route) {
+      $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
+
+      // execute callback function
+      $getHandler($req, $res);
+
+      $res->end();
+    };
+
+    $this->queue[] = $middleware;
   }
 
   public function put(...$args) {
@@ -174,7 +179,6 @@ class Router {
         continue;
       }
 
-
       // match http method
       if (!($middleware->method === 'ALL' || $middleware->method === $router->req->method)) {
         continue;
@@ -242,7 +246,6 @@ class Router {
 
   public static function extractRouteParameters($route, $url) {
 
-
     if (preg_match("/:/", $route)) {
 
       $params = array();
@@ -260,9 +263,6 @@ class Router {
 
       return $params;
     }
-  }
-
-  public function registerRouter($route, $router) {
   }
 
   protected function removeTrailingSlash($url) {
