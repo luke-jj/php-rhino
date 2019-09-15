@@ -37,6 +37,7 @@ class Response {
   }
 
   public function set($header, $value) {
+    header($header . ": " . $value);
 
     return $this;
   }
