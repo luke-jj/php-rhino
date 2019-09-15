@@ -1,0 +1,15 @@
+{
+    "name": "lucaj/php-rhino",
+    "description": "",
+    "authors": [
+        {
+            "name": "LucaJ",
+            "email": ""
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+    }
