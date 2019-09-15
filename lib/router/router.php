@@ -4,7 +4,8 @@ class Router {
 
   public $req;
   public $res;
-  public $mountpath;            // set with app.use('/users', users)
+  public $mountpath = '';            // set with app.use('/users', users)
+  public $route = '';                // automatically set
   public $queue = array();
 
   public function __construct($req, $res) {
@@ -13,15 +14,30 @@ class Router {
   }
 
   public function use(...$args) {
-    $path = '';
+    $route = '';
 
     if (is_string($args[0])) {
-      $path = array_shift($args);
+      $route = array_shift($args);
+    } else {
+      $route = '/*';
+    }
+
+    if ($args[0] instanceof Router) {
+      ($args[0])->mountpath = $route;
+      ($args[0])->route = $route . "*";
+      $this->queue[] = $args[0];
+
+      return;
     }
 
     foreach ($args as $arg) {
-      $middleware = function($mountpath, $req, $res) use ($arg) {
+      $middleware = new Middleware();
+      $middleware->method = 'ALL';
+      $middleware->route = $route;
+      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
+        $req->params = Router::extractRouteParameters($route, $req->url);
 
+        // execute callback function
         $arg($req, $res);
       };
 
@@ -29,8 +45,111 @@ class Router {
     }
   }
 
+  public function post(...$args) {
+    $route = '';
+
+    if (is_string($args[0])) {
+      $route = array_shift($args);
+    } else {
+      $route = '/*';
+    }
+
+    foreach ($args as $arg) {
+      $middleware = new Middleware();
+      $middleware->method = 'POST';
+      $middleware->route = $route;
+      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
+        $req->params = Router::extractRouteParameters($route, $req->url);
+
+        // execute callback function
+        $arg($req, $res);
+
+        $res->end();
+      };
+
+      $this->queue[] = $middleware;
+    }
+  }
+
   public function get(...$args) {
-    $this->use(...$args);
+    $route = '';
+
+    if (is_string($args[0])) {
+      $route = array_shift($args);
+    } else {
+      $route = '/*';
+    }
+
+    foreach ($args as $arg) {
+      $middleware = new Middleware();
+      $middleware->method = 'GET';
+      $middleware->route = $route;
+      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
+        $req->params = Router::extractRouteParameters($route, $req->url);
+
+        // execute callback function
+        $arg($req, $res);
+
+        $res->end();
+      };
+
+      $this->queue[] = $middleware;
+    }
+  }
+
+  public function put(...$args) {
+    $route = '';
+
+    if (is_string($args[0])) {
+      $route = array_shift($args);
+    } else {
+      $route = '/*';
+    }
+
+    foreach ($args as $arg) {
+      $middleware = new Middleware();
+      $middleware->method = 'PUT';
+      $middleware->route = $route;
+      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
+        $req->params = Router::extractRouteParameters($route, $req->url);
+
+        // execute callback function
+        $arg($req, $res);
+
+        $res->end();
+      };
+
+      $this->queue[] = $middleware;
+    }
+  }
+
+  public function delete(...$args) {
+    $route = '';
+
+    if (is_string($args[0])) {
+      $route = array_shift($args);
+    } else {
+      $route = '/*';
+    }
+
+    foreach ($args as $arg) {
+      $middleware = new Middleware();
+      $middleware->method = 'DELETE';
+      $middleware->route = $route;
+      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
+        $req->params = Router::extractRouteParameters($route, $req->url);
+
+        // execute callback function
+        $arg($req, $res);
+
+        $res->end();
+      };
+
+      $this->queue[] = $middleware;
+    }
+  }
+
+  public function all(...$args) {
   }
 
   /**
@@ -41,158 +160,114 @@ class Router {
    * @param $router Router
    */
 
-  protected function executeMiddleware(Router $router) {
+  protected function executeRouter(Router $router) {
 
     foreach ($router->queue as $middleware) {
 
       // if $middleware is router call this function recursively.
-      if (!is_callable($middleware)) {
-        $router->executeMiddleware($middleware);
+      if ($middleware instanceof Router) {
+
+        if ($this->matchUrl($middleware->route, $router->req->url)) {
+          $router->executeRouter($middleware);
+        }
+
+        continue;
       }
 
-      // else execute this $middleware closure
-      ($middleware) ($router->mountpath, $router->req, $router->res);
+
+      // match http method
+      if (!($middleware->method === 'ALL' || $middleware->method === $router->req->method)) {
+        continue;
+      }
+
+      // match route
+      if (!$this->matchUrl($router->mountpath . $middleware->route, $router->req->url)) {
+        continue;
+      }
+
+      ($middleware->closure) ($router->mountpath, $router->req, $router->res);
     }
   }
 
-
-
-    // public function get($resourceDirection, $handler) {
-
-        // if (!$this->validateHttpMethod('GET')) {
-            // return;
-        // }
-
-        // if (!$this->validateResourceDirection($resourceDirection)) {
-            // return;
-        // }
-
-        // $this->req->params = $this->extractRouteParameters($resourceDirection);
-
-        // $handler($this->req, $this->res);
-
-        // throw new RouterExit();
-    // }
-
-
-
-
-
-  /*
-   * Old Code
+  /**
+   * Http request resource location must match the '$resourceDirection`
+   * parameter.
+   *
+   * @param $resourceDirection string - resource direction
+   * @return bool
    */
 
+  private function matchUrl($route, $url) {
+    $route = $this->removeTrailingSlash($route);
+    $url = $this->removeTrailingSlash($url);
 
+    if ($this->hasRouteParameters($route)) {
+      $route = preg_replace( "/:[0-9A-Za-z]*/", "[0-9A-Za-z]*", $route);
+    } else {
+      $route = preg_replace("/\*/", ".*", $route);
+    }
 
-    /**
-     * Http request method must match '$methodName'.
-     *
-     * @param $methodName string - http method name.
-     * @return bool
-     */
+    $route = preg_replace("/\//", "\/", $route);
+    $route = "/^" . $route . "$/";
 
-    // private function validateHttpMethod($methodName) {
-        // if ($this->req->getHttpMethod() === strtoupper($methodName)) {
-            // return true;
-        // }
+    if (preg_match($route, $url)) {
+      return true;
+    }
 
-        // return false;
-    // }
+    return false;
+  }
 
-    /**
-     * Http request resource location must match the '$resourceDirection`
-     * parameter.
-     *
-     * @param $resourceDirection string - resource direction
-     * @return bool
-     */
+  /**
+   * Return true if this resource direction has user defined parameter(s)
+   *
+   * @param string The resource direction for a particular route.
+   * @return bool
+   */
 
-    // private function validateResourceDirection($resourceDirection) {
+  private function hasRouteParameters($route) {
+    if (preg_match("/\/:/", $route)) {
+      return true;
+    }
 
-        // if ($this->hasRouteParameters($resourceDirection)) {
-            // $resourceDirection = preg_replace( "/:[0-9A-Za-z]*/", "[0-9A-Za-z]*", $resourceDirection);
-        // } else {
-            // $resourceDirection = preg_replace("/\*/", ".*", $resourceDirection);
-        // }
+    return false;
+  }
 
-        // $resourceDirection = preg_replace("/\//", "\/", $resourceDirection);
-        // $resourceDirection = "/^" . $resourceDirection . "$/";
+  /**
+   * Extract route parameters defined with a colon `:` in the resource
+   * direction given to a specific route.
+   *
+   * @param string The resource direction for a particular route.
+   * @return array Mapping of route parameter names to their values.
+   */
 
-        // if (preg_match($resourceDirection, $this->req->getResourceLocation())) {
-            // $this->foundMatch = true;
+  public static function extractRouteParameters($route, $url) {
 
-            // return true;
-        // }
+    if (preg_match("/:/", $route)) {
+      $params = array();
 
-        // return false;
-    // }
+      $routeParameterNames = preg_split("/\/:/", $route);
+      $resourceBaseLocation = array_shift($routeParameterNames);
 
-    /**
-     * Return true if this resource direction has user defined parameter(s)
-     *
-     * @param string The resource direction for a particular route.
-     * @return bool
-     */
+      $bareParameters = str_replace($resourceBaseLocation."/", "", $url);
 
-    // private function hasRouteParameters($resourceDirection) {
-        // if (preg_match("/\/:/", $resourceDirection)) {
-            // return true;
-        // }
+      $parameterValues = preg_split("/\//", $bareParameters);
 
-        // return false;
-    // }
+      foreach($routeParameterNames as $parameterName) {
+        $params[$parameterName] = array_shift($parameterValues);
+      }
 
-    /**
-     * Extract route parameters defined with a colon `:` in the resource
-     * direction given to a specific route.
-     *
-     * @param string The resource direction for a particular route.
-     * @return array Mapping of route parameter names to their values.
-     */
+      return $params;
+    }
+  }
 
-    // private function extractRouteParameters($resourceDirection) {
+  public function registerRouter($route, $router) {
+  }
 
-        // if (preg_match("/:/", $resourceDirection)) {
-            // $params = array();
+  protected function removeTrailingSlash($url) {
+    if ($url !== '/') {
+      return preg_replace("/\/$/", "", $url);
+    }
 
-            // $routeParameterNames = preg_split("/\/:/", $resourceDirection);
-            // $resourceBaseLocation = array_shift($routeParameterNames);
-
-            // $bareParameters = str_replace(
-                // $resourceBaseLocation . "/",
-                // "",
-                // $this->req->getResourceLocation());
-
-            // $parameterValues = preg_split("/\//", $bareParameters);
-
-            // foreach($routeParameterNames as $parameterName) {
-                // $params[$parameterName] = array_shift($parameterValues);
-            // }
-
-            // return $params;
-        // }
-    // }
-
-    /**
-     * A routing function that handles HTTP GET requests.
-     *
-     * @param $handler Function - must be of the form function($req, $res) { }
-     */
-
-    // public function get($resourceDirection, $handler) {
-
-        // if (!$this->validateHttpMethod('GET')) {
-            // return;
-        // }
-
-        // if (!$this->validateResourceDirection($resourceDirection)) {
-            // return;
-        // }
-
-        // $this->req->params = $this->extractRouteParameters($resourceDirection);
-
-        // $handler($this->req, $this->res);
-
-        // throw new RouterExit();
-    // }
+    return $url;
+  }
 }

@@ -17,7 +17,7 @@ $app->post('/api/courses', function ($req, $res) {
 
   $course = array(
     "id" => count($courses) + 1,
-    "name" => $req->body->name
+    "name" => $req->body['name']
   );
 
   $courses[] = $course;
@@ -36,7 +36,7 @@ $app->get('/api/courses/:id', function ($req, $res) {
   $course = null;
 
   foreach ($courses as $item) {
-    if ($item["id"] == $req->params->id) {
+    if ($item["id"] == $req->params['id']) {
       $course = $item;
     }
   }
@@ -54,7 +54,7 @@ $app->put('/api/courses/:id', function ($req, $res) {
   $course = null;
 
   foreach ($courses as $item) {
-    if ($item["id"] == $req->params->id) {
+    if ($item["id"] == $req->params['id']) {
       $course = $item;
     }
   }
@@ -63,7 +63,7 @@ $app->put('/api/courses/:id', function ($req, $res) {
     return $res->status(404)->send("Course with given id not found.");
   }
 
-  $course['name'] = $req->body->name;
+  $course['name'] = $req->body['name'];
 
   $res->json($course);
 });
@@ -74,7 +74,7 @@ $app->delete('/api/courses/:id', function ($req, $res) {
   $course = null;
 
   foreach ($courses as $item) {
-    if ($item["id"] == $req->params->id) {
+    if ($item["id"] == $req->params['id']) {
       $course = $item;
     }
   }

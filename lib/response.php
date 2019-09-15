@@ -28,13 +28,22 @@ class Response {
     return $this;
   }
 
-  public function json() {
+  public function json($body) {
+    $json = json_encode($body);
+    header('Content-Type: application/json');
+    $this->send($json);
+
+    return $this;
   }
 
   public function set($header, $value) {
+
+    return $this;
   }
 
   public function type($type) {
+
+    return $this;
   }
 
   private function getHttpStatusMessage($code){

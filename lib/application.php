@@ -13,7 +13,7 @@ class Application extends Router {
     parent::__construct($req, $res);
 
     if (!$options['strict']) {
-      $this->req->url = preg_replace("/\/$/", "", $this->req->url);
+      $this->req->url = $this->removeTrailingSlash($this->req->url);
     }
   }
 
@@ -25,7 +25,11 @@ class Application extends Router {
    */
 
   public function start() {
-    $this->executeMiddleware($this);
+    try {
+      $this->executeRouter($this);
+    } catch (EndResponse $e) {
+      // http response has been ended with a `$res.send();` statement
+    }
   }
 
   /**
