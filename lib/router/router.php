@@ -17,6 +17,10 @@ class Router {
       $this->res = $res;
   }
 
+  /**
+   *
+   */
+
   public function use(...$args) {
     $route = '';
     $router = null;
@@ -42,22 +46,10 @@ class Router {
     }
 
     foreach ($args as $arg) {
-      $middleware = new Middleware();
-      $middleware->method = 'ALL';
-      $middleware->route = $route;
-      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
-
-        // execute callback function
-        $arg($req, $res);
-      };
-
-      $this->queue[] = $middleware;
+      $this->registerMiddleware($route, $arg);
     }
 
-    if ($router !== null) {
-      $this->queue[] = $router;
-    }
+    $this->registerRouter($router);
   }
 
   public function post(...$args) {
@@ -79,6 +71,10 @@ class Router {
   public function all(...$args) {
     $this->registerRouteHandler('ALL', ...$args);
   }
+
+  /**
+   *
+   */
 
   private function registerRouteHandler($method, ...$args) {
     $route = '';
@@ -108,6 +104,34 @@ class Router {
     };
 
     $this->queue[] = $middleware;
+  }
+
+  /**
+   *
+   */
+
+  private function registerMiddleware($route, $callback) {
+    $middleware = new Middleware();
+    $middleware->method = 'ALL';
+    $middleware->route = $route;
+    $middleware->closure = function($mountpath, $req, $res) use ($route, $callback) {
+      $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
+
+      // execute callback function
+      $callback($req, $res);
+    };
+
+    $this->queue[] = $middleware;
+  }
+
+  /**
+   *
+   */
+
+  private function registerRouter($router) {
+    if ($router !== null) {
+      $this->queue[] = $router;
+    }
   }
 
   /**
