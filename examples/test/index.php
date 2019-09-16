@@ -12,7 +12,7 @@ $app = rhino();
 
 require_once (dirname(__FILE__) . "/auth.php");
 require_once (dirname(__FILE__) . "/routes/documents.php");
-$app->use('/documents', $documentRouter);
+$app->use('/documents', $auth, $auth, $documentRouter, $auth);
 
 $app->get('/hi', $auth, $auth, function($req, $res) {
   $res->send("hi there from base.");

@@ -15,6 +15,7 @@ class Router {
 
   public function use(...$args) {
     $route = '';
+    $router = null;
 
     if (is_string($args[0])) {
       $route = array_shift($args);
@@ -23,15 +24,20 @@ class Router {
     }
 
     foreach ($args as $arg) {
-
       if ($arg instanceof Router) {
         $arg->mountpath = $route;
-        $arg->route = $route . "*";
-        $this->queue[] = $args[0];
+        $route .= '*';
+        $arg->route = $route;
+        $router = $arg;
 
-        return;
+        $index = array_search($router, $args);
+        array_splice($args, $index, 1);
+
+        break;
       }
+    }
 
+    foreach ($args as $arg) {
       $middleware = new Middleware();
       $middleware->method = 'ALL';
       $middleware->route = $route;
@@ -43,6 +49,10 @@ class Router {
       };
 
       $this->queue[] = $middleware;
+    }
+
+    if ($router !== null) {
+      $this->queue[] = $router;
     }
   }
 
