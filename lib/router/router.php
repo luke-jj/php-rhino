@@ -1,5 +1,9 @@
 <?php
 
+/**
+ *
+ */
+
 class Router {
 
   public $req;
@@ -57,32 +61,26 @@ class Router {
   }
 
   public function post(...$args) {
-    $route = '';
-
-    if (is_string($args[0])) {
-      $route = array_shift($args);
-    } else {
-      $route = '/*';
-    }
-
-    foreach ($args as $arg) {
-      $middleware = new Middleware();
-      $middleware->method = 'POST';
-      $middleware->route = $route;
-      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
-
-        // execute callback function
-        $arg($req, $res);
-
-        $res->end();
-      };
-
-      $this->queue[] = $middleware;
-    }
+    $this->registerRouteHandler('POST', ...$args);
   }
 
   public function get(...$args) {
+    $this->registerRouteHandler('GET', ...$args);
+  }
+
+  public function put(...$args) {
+    $this->registerRouteHandler('PUT', ...$args);
+  }
+
+  public function delete(...$args) {
+    $this->registerRouteHandler('DELETE', ...$args);
+  }
+
+  public function all(...$args) {
+    $this->registerRouteHandler('ALL', ...$args);
+  }
+
+  private function registerRouteHandler($method, ...$args) {
     $route = '';
 
     if (is_string($args[0])) {
@@ -91,80 +89,25 @@ class Router {
       $route = '/*';
     }
 
-    $getHandler = array_pop($args);
+    $routeHandler = array_pop($args);
 
     foreach($args as $arg) {
       $this->use($route, $arg);
     }
 
     $middleware = new Middleware();
-    $middleware->method = 'GET';
+    $middleware->method = $method;
     $middleware->route = $route;
-    $middleware->closure = function($mountpath, $req, $res) use ($getHandler, $route) {
+    $middleware->closure = function($mountpath, $req, $res) use ($routeHandler, $route) {
       $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
 
       // execute callback function
-      $getHandler($req, $res);
+      $routeHandler($req, $res);
 
       $res->end();
     };
 
     $this->queue[] = $middleware;
-  }
-
-  public function put(...$args) {
-    $route = '';
-
-    if (is_string($args[0])) {
-      $route = array_shift($args);
-    } else {
-      $route = '/*';
-    }
-
-    foreach ($args as $arg) {
-      $middleware = new Middleware();
-      $middleware->method = 'PUT';
-      $middleware->route = $route;
-      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
-
-        // execute callback function
-        $arg($req, $res);
-
-        $res->end();
-      };
-
-      $this->queue[] = $middleware;
-    }
-  }
-
-  public function delete(...$args) {
-    $route = '';
-
-    if (is_string($args[0])) {
-      $route = array_shift($args);
-    } else {
-      $route = '/*';
-    }
-
-    foreach ($args as $arg) {
-      $middleware = new Middleware();
-      $middleware->method = 'DELETE';
-      $middleware->route = $route;
-      $middleware->closure = function($mountpath, $req, $res) use ($arg, $route) {
-        $req->params = Router::extractRouteParameters($mountpath . $route, $req->url);
-
-        // execute callback function
-        $arg($req, $res);
-
-        $res->end();
-      };
-
-      $this->queue[] = $middleware;
-    }
-  }
-
-  public function all(...$args) {
   }
 
   /**
@@ -274,6 +217,10 @@ class Router {
       return $params;
     }
   }
+
+  /**
+   *
+   */
 
   protected function removeTrailingSlash($url) {
     if ($url !== '/') {
