@@ -4,7 +4,7 @@
     "authors": [
         {
             "name": "LucaJ",
-            "email": ""
+            "email": "34938395+luke-jj@users.noreply.github.com"
         }
     ],
     "minimum-stability": "dev",
@@ -13,3 +13,4 @@
     },
     "autoload": {
     }
+}
