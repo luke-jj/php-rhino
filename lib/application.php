@@ -7,6 +7,10 @@ require_once (dirname(__FILE__) . "/router/router.php");
 require_once (dirname(__FILE__) . "/middleware/middleware.php");
 require_once (dirname(__FILE__) . "/middleware/jsonparse.php");
 
+/**
+ *
+ */
+
 class Application extends Router {
 
   public function __construct($req, $res, $options = null) {

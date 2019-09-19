@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Validation class
+ * Validation class. Include this class in your datamodel to gain access
+ * to the convenient `validate` function to perform datamodel or http request
+ * body validation.
  */
 
 class Val {

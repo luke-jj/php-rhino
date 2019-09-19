@@ -52,21 +52,41 @@ class Router {
     $this->registerRouter($router);
   }
 
+  /**
+   *
+   */
+
   public function post(...$args) {
     $this->registerRouteHandler('POST', ...$args);
   }
+
+  /**
+   *
+   */
 
   public function get(...$args) {
     $this->registerRouteHandler('GET', ...$args);
   }
 
+  /**
+   *
+   */
+
   public function put(...$args) {
     $this->registerRouteHandler('PUT', ...$args);
   }
 
+  /**
+   *
+   */
+
   public function delete(...$args) {
     $this->registerRouteHandler('DELETE', ...$args);
   }
+
+  /**
+   *
+   */
 
   public function all(...$args) {
     $this->registerRouteHandler('ALL', ...$args);
@@ -129,6 +149,7 @@ class Router {
    */
 
   private function registerRouter($router) {
+
     if ($router !== null) {
       $this->queue[] = $router;
     }
@@ -206,6 +227,7 @@ class Router {
    */
 
   private function hasRouteParameters($route) {
+
     if (preg_match("/\/:/", $route)) {
       return true;
     }
@@ -247,6 +269,7 @@ class Router {
    */
 
   protected function removeTrailingSlash($url) {
+
     if ($url !== '/') {
       return preg_replace("/\/$/", "", $url);
     }

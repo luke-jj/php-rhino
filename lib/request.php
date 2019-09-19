@@ -18,6 +18,10 @@ class Request {
   public $hostname;
   public $port;
 
+  /**
+   *
+   */
+
   public function __construct($options = null) {
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->headers = getallheaders();

@@ -1,15 +1,27 @@
 <?php
 
+/**
+ *
+ */
+
 class Response {
 
   public $app;
   public $headersSent = false;
+
+  /**
+   *
+   */
 
   public function status($code) {
     http_response_code($code);
 
     return $this;
   }
+
+  /**
+   *
+   */
 
   public function sendStatus($code) {
     $this->status($code);
@@ -18,15 +30,28 @@ class Response {
     return $this;
   }
 
+  /**
+   * End the http response by throwing a new EndResponse Exception.
+   * The http output stream closes when this function is called.
+   */
+
   public function end() {
     throw new EndResponse();
   }
+
+  /**
+   *
+   */
 
   public function send($body) {
     echo $body;
 
     return $this;
   }
+
+  /**
+   *
+   */
 
   public function json($body) {
     $json = json_encode($body);
@@ -36,18 +61,30 @@ class Response {
     return $this;
   }
 
+  /**
+   *
+   */
+
   public function set($header, $value) {
     header($header . ": " . $value);
 
     return $this;
   }
 
+  /**
+   *
+   */
+
   public function type($type) {
 
     return $this;
   }
 
-  private function getHttpStatusMessage($code){
+  /**
+   *
+   */
+
+  private function getHttpStatusMessage($code) {
     $status = array(
       100 => 'Continue',
       101 => 'Switching Protocols',
