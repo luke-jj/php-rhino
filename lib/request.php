@@ -1,7 +1,14 @@
 <?php
 
+/*
+ * php-rhino micro-framework
+ * Copyright (c) 2019 Luca J
+ * Licensed under the MIT license.
+ */
+
 /**
- *
+ * The Request class holds all relevant information about a received http
+ * request and a method to conveniently retrieve http header values.
  */
 
 class Request {
@@ -19,7 +26,10 @@ class Request {
   public $port;
 
   /**
+   * Create a new request object which holds all relevant information about
+   * a received http request.
    *
+   * @param {Array} $options - optional parameter (see api docs)
    */
 
   public function __construct($options = null) {
@@ -48,6 +58,8 @@ class Request {
 
   /**
    * Returns the specified HTTP request header field.
+   *
+   * @return {string} $header - return the value of a specific header.
    */
 
   public function get($header) {

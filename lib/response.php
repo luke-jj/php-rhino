@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * php-rhino micro-framework
+ * Copyright (c) 2019 Luca J
+ * Licensed under the MIT license.
+ */
+
 /**
- *
+ * The Response class provides useful methods to set http response codes, write
+ * to the http response stream, and to break out of the request response cycle
+ * by ending the http response.
  */
 
 class Response {
@@ -10,7 +18,7 @@ class Response {
   public $headersSent = false;
 
   /**
-   *
+   * @param
    */
 
   public function status($code) {

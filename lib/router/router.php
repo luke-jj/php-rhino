@@ -1,7 +1,25 @@
 <?php
 
+/*
+ * php-rhino micro-framework
+ * Copyright (c) 2019 Luca J
+ * Licensed under the MIT license.
+ */
+
 /**
+ * The Router serves as a collection to which route handlers, middleware and
+ * other routers can be registered to.
  *
+ * The objects registered to this router are stored in the $queue collection.
+ *
+ * This collection is traversed by the main collection until all matching
+ * routes have been found or the request response cycle has been terminated.
+ *
+ * Numerous functions to register routes to this router are available as
+ * instance methods on this class.
+ *
+ * Use the .use(), .get(), .post(), .put(), .delete(), and .all() methods
+ * to register routes with a router. See the api documentation for examples.
  */
 
 class Router {
@@ -18,7 +36,14 @@ class Router {
   }
 
   /**
+   * Register the provided arguments with this router's routing $queue either
+   * as middleware or as a router according to their data type.
    *
+   * Optionally a url string may be provided to specify the target route or
+   * resource direction. If no url string is provided the root location will
+   * be assumed as the default route.
+   *
+   * @param $args Array - Array of a url string, closure functions or Router.
    */
 
   public function use(...$args) {
@@ -53,7 +78,10 @@ class Router {
   }
 
   /**
+   * Register provided arguments as middleware by calling the
+   * `registerRouteHandler()` function with the appropriate http method.
    *
+   * @param $args Array - Array of a url string and closure functions.
    */
 
   public function post(...$args) {
@@ -61,7 +89,10 @@ class Router {
   }
 
   /**
+   * Register provided arguments as middleware by calling the
+   * `registerRouteHandler()` function with the appropriate http method.
    *
+   * @param $args Array - Array of a url string and closure functions.
    */
 
   public function get(...$args) {
@@ -69,7 +100,10 @@ class Router {
   }
 
   /**
+   * Register provided arguments as middleware by calling the
+   * `registerRouteHandler()` function with the appropriate http method.
    *
+   * @param $args Array - Array of a url string and closure functions.
    */
 
   public function put(...$args) {
@@ -77,7 +111,10 @@ class Router {
   }
 
   /**
+   * Register provided arguments as middleware by calling the
+   * `registerRouteHandler()` function with the appropriate http method.
    *
+   * @param $args Array - Array of a url string and closure functions.
    */
 
   public function delete(...$args) {
@@ -85,7 +122,10 @@ class Router {
   }
 
   /**
+   * Register provided arguments as middleware by calling the
+   * `registerRouteHandler()` function with the appropriate http method.
    *
+   * @param $args Array - Array of a url string and closure functions.
    */
 
   public function all(...$args) {
@@ -93,7 +133,18 @@ class Router {
   }
 
   /**
+   * Register all closure functions provided as arguments as middlware objects
+   * on this router's routing $queue.
    *
+   * The vararg parameter may optionally contain a url string - route - as
+   * it's first parameter. If no url string is provided then the root path
+   * of this router will be used as the registration route.
+   *
+   * The provided http request method specifies for which types of http request
+   * the closures should be executed.
+   *
+   * @param $method string - http request method
+   * @param $args Array - Array of an optional url string and closure functions.
    */
 
   private function registerRouteHandler($method, ...$args) {
@@ -127,7 +178,11 @@ class Router {
   }
 
   /**
+   * Create a middleware object from a given $route and $callback, and add this
+   * middleware object to this router's routing $queue.
    *
+   * @param $route string - The resource direction, or url for a middleware.
+   * @param $callback Function - handler to be executed if routes match.
    */
 
   private function registerMiddleware($route, $callback) {
@@ -145,7 +200,9 @@ class Router {
   }
 
   /**
+   * Add the given router to this router's routing $queue.
    *
+   * @param $router Router
    */
 
   private function registerRouter($router) {
@@ -239,8 +296,9 @@ class Router {
    * Extract route parameters defined with a colon `:` in the resource
    * direction given to a specific route.
    *
-   * @param string The resource direction for a particular route.
-   * @return array Mapping of route parameter names to their values.
+   * @param $route string - The resource direction for a particular route.
+   * @param $url string - The concrete resource location.
+   * @return Array Mapping of route parameter names to their values.
    */
 
   public static function extractRouteParameters($route, $url) {
@@ -265,7 +323,10 @@ class Router {
   }
 
   /**
+   * Remove a trailing forward slash from a url.
    *
+   * @param $url string - a resource location url string
+   * @return string - stripped url string
    */
 
   protected function removeTrailingSlash($url) {
