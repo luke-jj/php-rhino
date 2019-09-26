@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * php-rhino micro-framework
+ * Copyright (c) 2019 Luca J
+ * Licensed under the MIT license.
+ */
+
 /**
  * Validation class. Include this class in your datamodel to gain access
  * to the convenient `validate` function to perform datamodel or http request

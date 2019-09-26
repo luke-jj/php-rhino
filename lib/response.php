@@ -18,7 +18,9 @@ class Response {
   public $headersSent = false;
 
   /**
-   * @param
+   * Set the http status code to the given value.
+   *
+   * @param $code {int} http status code
    */
 
   public function status($code) {
@@ -28,7 +30,10 @@ class Response {
   }
 
   /**
+   * Set the http status code to the given value and write the conventional
+   * status message to the response body.
    *
+   * @param $code {int} http status code
    */
 
   public function sendStatus($code) {
@@ -48,7 +53,9 @@ class Response {
   }
 
   /**
+   * Write a given string to the http response stream.
    *
+   * @param $body {string} text to write to the http response body.
    */
 
   public function send($body) {
@@ -58,7 +65,11 @@ class Response {
   }
 
   /**
+   * Convert the given argument to a json encoded string, set the
+   * 'Content-Type' response header to 'application/json' and write the json
+   * string to the http response stream.
    *
+   * @param $body {mixed} - object to be converted to json string (any type)
    */
 
   public function json($body) {
@@ -70,7 +81,11 @@ class Response {
   }
 
   /**
+   * Set an http response header to a given value. This function can not be
+   * used after the http response body has been written to.
    *
+   * @param $header {string} http header
+   * @param $value {string} http header value
    */
 
   public function set($header, $value) {
@@ -80,16 +95,10 @@ class Response {
   }
 
   /**
+   * Return the conventional status message for a given http status code.
    *
-   */
-
-  public function type($type) {
-
-    return $this;
-  }
-
-  /**
-   *
+   * @param $code {int} http status code
+   * @private
    */
 
   private function getHttpStatusMessage($code) {

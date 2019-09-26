@@ -24,6 +24,7 @@ $app->get('/hi', function($req, $res) {
 
 $app->get('/', function($req, $res) {
   $res->send("hi there from root.");
+  $res->send($req->get('X-Custom-HEAder'));
 });
 
 $app->get('/:number', $auth, function($req, $res) {

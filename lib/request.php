@@ -29,12 +29,12 @@ class Request {
    * Create a new request object which holds all relevant information about
    * a received http request.
    *
-   * @param {Array} $options - optional parameter (see api docs)
+   * @param {array} $options - optional parameter (see api docs)
    */
 
   public function __construct($options = null) {
     $this->method = $_SERVER['REQUEST_METHOD'];
-    $this->headers = getallheaders();
+    $this->headers = array_change_key_case(getallheaders(), CASE_LOWER);
 
     if (isset($_SERVER['PATH_INFO'])) {
       $this->originalUrl = $_SERVER['PATH_INFO'];
@@ -57,12 +57,20 @@ class Request {
   }
 
   /**
-   * Returns the specified HTTP request header field.
+   * Returns the specified HTTP request header field. Argument header names and
+   * stored header keys are case-insensitive.
    *
-   * @return {string} $header - return the value of a specific header.
+   * @param $header {string} - name of a http header.
+   * @return {string} return the value of a specific header or null if not set.
    */
 
   public function get($header) {
-    return $this->headers[$header];
+    $header = strtolower($header);
+
+    if (isset($this->headers[$header])) {
+      return $this->headers[$header];
+    } else {
+      return null;
+    }
   }
 }

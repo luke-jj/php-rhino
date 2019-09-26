@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * php-rhino micro-framework
+ * Copyright (c) 2019 Luca J
+ * Licensed under the MIT license.
+ */
+
 /**
  * Instances of this class are assigned to a router's route queue. A middleware
  * object contains the resource direction or $route, the http $method for that
