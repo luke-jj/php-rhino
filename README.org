@@ -1,12 +1,14 @@
 * PHP Rhino
+Rhino is a php micro-framework for building fast and reliable http services, 
+APIs, and to serve static content through an easy to configure php based 
+routing service.
 
 ** Contents
    
 1. Quick Start
-2. Feature Tutorial
+2. Feature Tutorials
 3. Installation
 4. API Documentation
-
 
 ** Quick Start
 To get started quickly simply require or include one of the =rhino.php= files 
@@ -18,7 +20,9 @@ framework's main application and assign the return to a variable -
 conventionally named =$app=.
   
 Next use instance methods of the application object to register middleware and
-routehandler, and to 
+routehandler. =use()= registers a middleware with this application while
+methods like =get()=, =post()= and =delete()= register route handlers which
+result in a final http response to the client. 
 
 Finally a call to the =start()= method must be made after all components have
 been registered on the application object.
@@ -32,33 +36,58 @@ $app = rhino();
 
 $app->use($jsonparse);
 
-$app->get('/', function($req, $res) {
+$app->post('/', function($req, $res) {
   $name = $req->body['name'];
   $res->send("Hello $name");
 });
 
+$app->get('/', function($req, $res) {
+  $res->send("Hello, World!");
+});
+
 $app->get('/:name', function($req, $res) {
-  res->send("Hello " . $req->params['name']);
+  $res->send("Hello " . $req->params['name']);
 });
 
 $app->start();
 #+END_SRC
 
-Take a look in the =examples/= folder for more advanced complete working 
-prototype applications.
+To immediately test your application open a terminal in the root folder of your
+application and launch a php development server by entering: 
+#+BEGIN_SRC
+php -S localhost:5001 .
+#+END_SRC
+Open your favorite browser and navigate to =localhost:5001/Peter= to view the
+results. If you want to test the registered *POST* route as well you can use an
+external graphical tool like /Postman/ or simply use cURL from the terminal 
+with the following command:
+#+BEGIN_SRC
+echo '{ "name": "Charlie" }' | curl -d @- http://localhost:5001/ --header "Content-Type:application/json"
+#+END_SRC
 
-** Feature Tutorial
+Take a look in the =examples/= folder for more advanced working prototype 
+applications.
+
+** Feature Tutorials
+   
+*** Query Parameters
+*** Route Parameters
+*** Secondary Routers
+*** Middleware
+*** Built-In Request Validation
    
 ** Installation
 The recommended way of installing this framework is placing the =lib/= folder
 in the root or =vendor/= folder of your project and then requiring the main
-=rhino.php= file in your app's main index.php file.
+=rhino.php= file in your app's main index.php file. That's it - you are ready 
+to go.
 
 #+BEGIN_SRC php
 <?php
 
 require_once (dirname(__FILE__) . "/lib/rhino.php");
 #+END_SRC
+
 ** API Documentation
 
 - rhino()
