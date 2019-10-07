@@ -3,8 +3,9 @@
 ** Contents
    
 1. Quick Start
-2. Installation
-3. API Documentation
+2. Feature Tutorial
+3. Installation
+4. API Documentation
 
 
 ** Quick Start
@@ -13,19 +14,51 @@ located in the base or lib/ folder of this framework in the =index.php= file
 of your application.
 
 You can then call the exported =rhino()= function to instantiate this 
-framework's main application and assign the return to a variable 
-- conventionally named =$app=.
+framework's main application and assign the return to a variable - 
+conventionally named =$app=.
   
+Next use instance methods of the application object to register middleware and
+routehandler, and to 
+
+Finally a call to the =start()= method must be made after all components have
+been registered on the application object.
+
 #+BEGIN_SRC php
 <?php
 
-require_once './lib/rhino.php';
+require_once (dirname(__FILE__) . "/lib/rhino.php");
 
 $app = rhino();
+
+$app->use($jsonparse);
+
+$app->get('/', function($req, $res) {
+  $name = $req->body['name'];
+  $res->send("Hello $name");
+});
+
+$app->get('/:name', function($req, $res) {
+  res->send("Hello " . $req->params['name']);
+});
+
+$app->start();
 #+END_SRC
 
-See the =examples/= folder more complete working prototype applications.
+Take a look in the =examples/= folder for more advanced complete working 
+prototype applications.
 
+** Feature Tutorial
+   
+** Installation
+The recommended way of installing this framework is placing the =lib/= folder
+in the root or =vendor/= folder of your project and then requiring the main
+=rhino.php= file in your app's main index.php file.
+
+#+BEGIN_SRC php
+<?php
+
+require_once (dirname(__FILE__) . "/lib/rhino.php");
+#+END_SRC
 ** API Documentation
 
 - rhino()
