@@ -1,0 +1,36 @@
+* PHP Rhino
+
+** Contents
+   
+1. Quick Start
+2. Installation
+3. API Documentation
+
+
+** Quick Start
+To get started quickly simply require or include one of the =rhino.php= files 
+located in the base or lib/ folder of this framework in the =index.php= file
+of your application.
+
+You can then call the exported =rhino()= function to instantiate this 
+framework's main application and assign the return to a variable 
+- conventionally named =$app=.
+  
+#+BEGIN_SRC php
+<?php
+
+require_once './lib/rhino.php';
+
+$app = rhino();
+#+END_SRC
+
+See the =examples/= folder more complete working prototype applications.
+
+** API Documentation
+
+- rhino()
+- Application
+- Router
+- Request
+- Response
+
