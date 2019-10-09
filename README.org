@@ -69,7 +69,6 @@ Take a look in the =examples/= folder for more advanced working prototype
 applications.
 
 ** Feature Tutorials
-   
 *** Regular Expressions In Resource Routes
 Most regular expressions work with route handlers.
 
@@ -113,7 +112,7 @@ route parameters are converted to key - value pairs and stored in the
 <?php
 
 $app->get('/api/users/:id', function($req, $res) {
-  $res->send("Retrieving data for user with id: {$req->params['id']});
+  $res->send("Retrieving data for user with id: {$req->params['id']}");
 });
 
 $app->get('/api/users/:lastname/:firstname', function($req, $res) {
@@ -126,14 +125,14 @@ $app->get('/api/users/:lastname/:firstname', function($req, $res) {
 
 *** Secondary Routers
 Additional routers can be instantiated from the original Application
-($app) instance.  These routers hold most of the same methods that the
-Application instance has.  Secondary routers can be mounted to a
+=$app= instance. These routers hold most of the same methods that the
+Application instance has. Secondary routers can be mounted on a
 custom path on other routers or the main application.
 
 Secondary routers are used to segment different resources into their own files 
 and to later mount them on a common url resouce path.
 
-#+BEGIN_SRC
+#+BEGIN_SRC php
 // in users.php
 $router = $app->router();
 
@@ -146,12 +145,36 @@ $router->get('/:id', function($req, $res) {
 });
 
 // in index.php
+require_once (dirname(__file__) . '/routes/users.php');
+
 $app->use('/api/users/', $router);
 
 // routes registered on $router are now available on /api/users/...
 #+END_SRC
 
 *** Middleware
+Middleware is functionality that is executed as part of the
+request-response cycle.  The =use()= method registers middleware
+functions on a given path. Those middleware functions are defined like
+regular route handlers but do not automatically terminate the request
+response cycle after they are finished executing.
+
+#+BEGIN_SRC php
+<?php 
+// this middleware is used to check whether the client has the required 
+// authentication and executed on all routes of the users resource .
+
+$app->use('/api/users/*', function($req, $res) {
+  if (!$req->get('X-Token')) {
+    $res->status(401)->send('Access denied. No token provided.');
+    $res->end();
+  }
+  
+  // authenticate some more
+});
+#+END_SRC
+
+
 *** Built-In Request Validation
 To use the built-in validator you must import
 =/lib/addons/validation.php= in your main /index.php/ file.
@@ -182,19 +205,20 @@ require_once (dirname(__FILE__) . "/lib/rhino.php");
   - all()
   - use()
 - Request
+  - app
   - headers
   - get()
   - body
   - params
   - queryString
   - query
-  - app
   - originalUrl
   - url
   - method
   - hostname
   - port
 - Response
+  - app
   - set()
   - send()
   - json()
