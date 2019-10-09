@@ -70,11 +70,91 @@ applications.
 
 ** Feature Tutorials
    
+*** Regular Expressions In Resource Routes
+Most regular expressions work with route handlers.
+
+#+BEGIN_SRC php
+<?php
+
+// trigger this route handler as a middleware for all routes starting
+// with `/api/`.
+$app->use('/api/*', function($req, $res) {
+});
+
+// trigger this route handler for any number entered after `/api/`
+$app->get('/api/[0-9]+', function($req, $res) {
+});
+
+$app->get('/api/*/name/[A-Za-z ]+', function($req, $res) {
+});
+#+END_SRC
+
 *** Query Parameters
+Query Parameters are automatically converted to key-value pairs and
+stored in the =query= property of the request object.
+
+#+BEGIN_SRC php
+<?php
+
+$app->get('/', function($req, $res) {
+  $orderBy = $req->query['orderBy'];
+  $offset = $req->query['offset'];
+  $limit = $req->query['limit'];
+});
+#+END_SRC
+
 *** Route Parameters
+Route parameters are defined with a colon =:= in the resource route.
+Route parameters and strings entered by the client in place of the
+route parameters are converted to key - value pairs and stored in the
+=params= property of the request object.
+
+#+BEGIN_SRC php
+<?php
+
+$app->get('/api/users/:id', function($req, $res) {
+  $res->send("Retrieving data for user with id: {$req->params['id']});
+});
+
+$app->get('/api/users/:lastname/:firstname', function($req, $res) {
+  $lastName = $req->params['lastname'];
+  $firstName = $req->params['firstname'];
+
+  $res->send("Loading data for $firstName $lastName");
+}
+#+END_SRC
+
 *** Secondary Routers
+Additional routers can be instantiated from the original Application
+($app) instance.  These routers hold most of the same methods that the
+Application instance has.  Secondary routers can be mounted to a
+custom path on other routers or the main application.
+
+Secondary routers are used to segment different resources into their own files 
+and to later mount them on a common url resouce path.
+
+#+BEGIN_SRC
+// in users.php
+$router = $app->router();
+
+$router->get('/', function($req, $res) {
+  // do stuff
+});
+
+$router->get('/:id', function($req, $res) {
+  // do stuff
+});
+
+// in index.php
+$app->use('/api/users/', $router);
+
+// routes registered on $router are now available on /api/users/...
+#+END_SRC
+
 *** Middleware
 *** Built-In Request Validation
+To use the built-in validator you must import
+=/lib/addons/validation.php= in your main /index.php/ file.
    
 ** Installation
 The recommended way of installing this framework is placing the =lib/= folder
@@ -92,7 +172,50 @@ require_once (dirname(__FILE__) . "/lib/rhino.php");
 
 - rhino()
 - Application
+  - router()
+  - start()
 - Router
+  - get()
+  - post()
+  - put()
+  - delete()
+  - all()
+  - use()
 - Request
+  - headers
+  - get()
+  - body
+  - params
+  - queryString
+  - query
+  - app
+  - originalUrl
+  - url
+  - method
+  - hostname
+  - port
 - Response
+  - set()
+  - send()
+  - json()
+  - end()
+  - status()
+  - sendStatus()
+  - type()
+
+$jsonparse
+
+
+*** rhino()
+*** Application
+*** Router
+*** Request
+*** Response
+**** json($body)
+Automatically convert an object, array or map to a json formatted string,
+set the 'Content-Type' http header to 'application/json' and write the 
+string to the http response stream.
+
+@param $body object - object, array or map
+@return Response - a reference to this Response object to allow chaining.
 

@@ -21,6 +21,7 @@ class Response {
    * Set the http status code to the given value.
    *
    * @param $code {int} http status code
+   * @return Response - a reference to this response object to allow chaining.
    */
 
   public function status($code) {
@@ -34,6 +35,7 @@ class Response {
    * status message to the response body.
    *
    * @param $code {int} http status code
+   * @return Response - a reference to this response object to allow chaining.
    */
 
   public function sendStatus($code) {
@@ -56,6 +58,7 @@ class Response {
    * Write a given string to the http response stream.
    *
    * @param $body {string} text to write to the http response body.
+   * @return Response - a reference to this response object to allow chaining.
    */
 
   public function send($body) {
@@ -70,6 +73,7 @@ class Response {
    * string to the http response stream.
    *
    * @param $body {mixed} - object to be converted to json string (any type)
+   * @return Response - a reference to this response object to allow chaining.
    */
 
   public function json($body) {
@@ -86,6 +90,7 @@ class Response {
    *
    * @param $header {string} http header
    * @param $value {string} http header value
+   * @return Response - a reference to this response object to allow chaining.
    */
 
   public function set($header, $value) {
@@ -98,6 +103,7 @@ class Response {
    * Return the conventional status message for a given http status code.
    *
    * @param $code {int} http status code
+   * @return {string} status code message
    * @private
    */
 
