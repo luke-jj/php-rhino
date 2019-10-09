@@ -162,7 +162,7 @@ response cycle after they are finished executing.
 #+BEGIN_SRC php
 <?php 
 // this middleware is used to check whether the client has the required 
-// authentication and executed on all routes of the users resource .
+// authentication and is executed on all routes of the 'users' resource.
 
 $app->use('/api/users/*', function($req, $res) {
   if (!$req->get('X-Token')) {
