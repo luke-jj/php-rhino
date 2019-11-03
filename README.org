@@ -1,28 +1,28 @@
 * PHP Rhino
-Rhino is a php micro-framework for building fast and reliable http services, 
-APIs, and to serve static content through an easy to configure php based 
+Rhino is a php micro-framework for building fast and reliable http services,
+APIs, and to serve static content through an easy to configure php based
 routing service.
 
 ** Contents
-   
+
 1. Quick Start
 2. Feature Tutorials
 3. Installation
 4. API Documentation
 
 ** Quick Start
-To get started quickly simply require or include one of the =rhino.php= files 
+To get started quickly simply require or include one of the =rhino.php= files
 located in the base or lib/ folder of this framework in the =index.php= file
 of your application.
 
-You can then call the exported =rhino()= function to instantiate this 
-framework's main application and assign the return to a variable - 
+You can then call the exported =rhino()= function to instantiate this
+framework's main application and assign the return to a variable -
 conventionally named =$app=.
-  
+
 Next use instance methods of the application object to register middleware and
 routehandler. =use()= registers a middleware with this application while
 methods like =get()=, =post()= and =delete()= register route handlers which
-result in a final http response to the client. 
+result in a final http response to the client.
 
 Finally a call to the =start()= method must be made after all components have
 been registered on the application object.
@@ -53,19 +53,19 @@ $app->start();
 #+END_SRC
 
 To immediately test your application open a terminal in the root folder of your
-application and launch a php development server by entering: 
+application and launch a php development server by entering:
 #+BEGIN_SRC
 php -S localhost:5001 .
 #+END_SRC
 Open your favorite browser and navigate to =localhost:5001/Peter= to view the
 results. If you want to test the registered *POST* route as well you can use an
-external graphical tool like /Postman/ or simply use cURL from the terminal 
+external graphical tool like /Postman/ or simply use cURL from the terminal
 with the following command:
 #+BEGIN_SRC
 echo '{ "name": "Charlie" }' | curl -d @- http://localhost:5001/ --header "Content-Type:application/json"
 #+END_SRC
 
-Take a look in the =examples/= folder for more advanced working prototype 
+Take a look in the =examples/= folder for more advanced working prototype
 applications.
 
 ** Feature Tutorials
@@ -129,7 +129,7 @@ Additional routers can be instantiated from the original Application
 Application instance has. Secondary routers can be mounted on a
 custom path on other routers or the main application.
 
-Secondary routers are used to segment different resources into their own files 
+Secondary routers are used to segment different resources into their own files
 and to later mount them on a common url resouce path.
 
 #+BEGIN_SRC php
@@ -160,8 +160,8 @@ regular route handlers but do not automatically terminate the request
 response cycle after they are finished executing.
 
 #+BEGIN_SRC php
-<?php 
-// this middleware is used to check whether the client has the required 
+<?php
+// this middleware is used to check whether the client has the required
 // authentication and is executed on all routes of the 'users' resource.
 
 $app->use('/api/users/*', function($req, $res) {
@@ -169,7 +169,7 @@ $app->use('/api/users/*', function($req, $res) {
     $res->status(401)->send('Access denied. No token provided.');
     $res->end();
   }
-  
+
   // authenticate some more
 });
 #+END_SRC
@@ -178,11 +178,11 @@ $app->use('/api/users/*', function($req, $res) {
 *** Built-In Request Validation
 To use the built-in validator you must import
 =/lib/addons/validation.php= in your main /index.php/ file.
-   
+
 ** Installation
 The recommended way of installing this framework is placing the =lib/= folder
 in the root or =vendor/= folder of your project and then requiring the main
-=rhino.php= file in your app's main index.php file. That's it - you are ready 
+=rhino.php= file in your app's main index.php file. That's it - you are ready
 to go.
 
 #+BEGIN_SRC php
@@ -231,13 +231,65 @@ $jsonparse
 
 
 *** rhino()
+Generate the request and response objects used throughout the application
+and return a new instance of this framework's main Application class.
+
+#+BEGIN_SRC
+    @param $options Array - optional parameter mapping of settings (see api docs)
+    @return Application
+#+END_SRC
+
 *** Application
+Application is a router that can register middleware and route handlers and
+mount other routers. It inherits all methods and properties from the =Router=
+class.
+
+The Application class inherits two additional methods. One to start the
+application by iterating over this applications route $queue and one to
+generate a new router.
+
+
+**** start(): void
+Start this application.
+
+Iterate over all registered route queue collections, match routes and
+execute middleware and response callback functions.
+
+**** router(): Router
+Return a new router.
+
+#+BEGIN_SRC
+    @return {Router} new router instance generated using this application.
+#+END_SRC
+
 *** Router
+The Router serves as a collection to which route handlers, middleware and
+other routers can be registered to.
+
+The objects registered to this router are stored in the $queue collection.
+
+This collection is traversed by the main collection until all matching
+routes have been found or the request response cycle has been terminated.
+
+Numerous functions to register routes to this router are available as
+instance methods on this class.
+
+Use the .use(), .get(), .post(), .put(), .delete(), and .all() methods
+to register routes with a router. See the api documentation for examples.
+
+
 *** Request
+The Request class holds all relevant information about a received http
+request and a method to conveniently retrieve http header values.
+
 *** Response
-**** json($body)
+The Response class provides useful methods to set http response codes, write
+to the http response stream, and to break out of the request response cycle
+by ending the http response.
+
+**** json($body): Response
 Automatically convert an object, array or map to a json formatted string,
-set the 'Content-Type' http header to 'application/json' and write the 
+set the 'Content-Type' http header to 'application/json' and write the
 string to the http response stream.
 
 @param $body object - object, array or map
