@@ -1,6 +1,6 @@
 {
     "name": "lucaj/php-rhino",
-    "description": "",
+    "description": "Rhino is a php micro-framework for building fast and reliable http services and APIs.",
     "authors": [
         {
             "name": "LucaJ",
