@@ -3,6 +3,8 @@ Rhino is a php micro-framework for building fast and reliable http services,
 APIs, and to serve static content through an easy to configure php based
 routing service.
 
+Find this project on packagist: [php-rhino](https://packagist.org/packages/lucaj/php-rhino)
+
 ** Contents
 
 1. Quick Start
