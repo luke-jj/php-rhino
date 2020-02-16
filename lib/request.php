@@ -38,6 +38,10 @@ class Request {
 
     if (isset($_SERVER['PATH_INFO'])) {
       $this->originalUrl = $_SERVER['PATH_INFO'];
+    } else if (isset($_SERVER['ORIG_PATH_INFO'])) {
+      $this->originalUrl = $_SERVER['ORIG_PATH_INFO'];
+    } else if (isset($_SERVER['REQUEST_URI'])) {
+      $this->originalUrl = $_SERVER['REQUEST_URI'];
     } else {
       $this->originalUrl = '/';
     }
